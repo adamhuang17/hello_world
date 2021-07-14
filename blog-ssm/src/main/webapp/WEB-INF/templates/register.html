@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle} + '&nbsp;|&nbsp;Log in'"></title>
+	<link rel="shortcut icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+	<link rel="apple-touch-icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
+	<!-- Theme style -->
+	<link rel="stylesheet" th:href="@{/css/adminlte.min.css}">
+	<!-- iCheck for checkboxes and radio inputs -->
+	<link rel="stylesheet" th:href="@{/plugins/icheck-bootstrap/icheck-bootstrap.min.css}">
+	<!-- SweetAlert2 -->
+	<link rel="stylesheet" th:href="@{/plugins/sweetalert2/sweetalert2.min.css}">
+	<!-- Google Font: Source Sans Pro -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+	<style type="text/css">
+		.login-logo a, .register-logo a {
+			font-weight: 700;
+		}
+	</style>
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+	<div class="login-logo">
+		<a href="/index">Blog · Register</a>
+	</div>
+	<!-- /.login-logo -->
+	<div class="card">
+		<div class="card-body login-card-body">
+<!--			<form action="user/login" method="post" id="loginForm">-->
+			<form method="post" id="loginForm">
+				<div class="input-group mb-3">
+				<input type="text" id="userName" class="form-control" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\-_]/g,'')" required placeholder="UserName">
+				<div class="input-group-append">
+					<div class="input-group-text">
+						<span class="fas fa-user"></span>
+					</div>
+				</div>
+				</div>
+				<div class="input-group mb-3">
+					<input type="email" id="Email" class="form-control" required placeholder="Email">
+					<div class="input-group-append">
+						<div class="input-group-text">
+							<span class="fas fa-envelope"></span>
+						</div>
+					</div>
+				</div>
+				<div class="input-group mb-3">
+					<input type="password" id="password" class="form-control" required placeholder="Password">
+					<div class="input-group-append">
+						<div class="input-group-text">
+							<span class="fas fa-lock"></span>
+						</div>
+					</div>
+				</div>
+				<div class="input-group mb-3">
+					<input type="password" id="VerifyPassword" class="form-control" required placeholder="VerifyPassword">
+					<div class="input-group-append">
+						<div class="input-group-text">
+							<span class="fas fa-lock"></span>
+						</div>
+					</div>
+				</div>
+				<div class="input-group mb-3">
+					<input type="button" onclick="subForm()" class="btn btn-success btn-block" value="注册">
+				</div>
+			</form>
+
+			<div class="social-auth-links text-center mb-3">
+				<p>- OR -</p>
+				<a href="/login" class="btn btn-block btn-primary">
+					登录
+				</a>
+			</div>
+			<!-- /.social-auth-links -->
+		</div>
+		<!-- /.login-card-body -->
+	</div>
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/js/adminlte.min.js}"></script>
+<!-- SweetAlert2 -->
+<script th:src="@{/plugins/sweetalert2/sweetalert2.all.min.js}"></script>
+<script>
+	var Toast = Swal.mixin({
+		toast: true,
+		position: 'top-end',
+		showConfirmButton: false,
+		timer: 1500
+	});
+
+	$('#userName').blur(function () {
+		var userName = $(this).val();
+		if (userName != '') {
+			$.get("/findUserByUserName",{userName:userName},function (data) {
+				if (data.userExist) {
+					Toast.fire({
+						icon: 'error',
+						title: '用户名已存在！'
+					});
+					$('#userName').val("");
+					$('#userName').focus();
+				}
+			});
+		}
+	});
+
+	$('#userName').bind('keydown', function (event) {
+		var event = window.event || arguments.callee.caller.arguments[0];
+		if (event.keyCode == 13){
+			$('#Email').focus();
+		}
+	});
+
+	$('#Email').bind('keydown', function (event) {
+		var event = window.event || arguments.callee.caller.arguments[0];
+		if (event.keyCode == 13){
+			$('#password').focus();
+		}
+	});
+
+	$('#password').bind('keydown', function (event) {
+		var event = window.event || arguments.callee.caller.arguments[0];
+		if (event.keyCode == 13){
+			$('#VerifyPassword').focus();
+		}
+	});
+
+	$('#VerifyPassword').bind('keydown', function (event) {
+		var event = window.event || arguments.callee.caller.arguments[0];
+		if (event.keyCode == 13){
+			subForm();
+		}
+	});
+
+	function isNull(str) {
+		return str === null || str === undefined || str.trim() === '';
+	}
+
+	function validateBlogForm() {
+		var userName = $('#userName').val();
+		var email = $('#Email').val();
+		var password = $('#password').val();
+		var VerifyPassword = $('#VerifyPassword').val();
+
+		if (isNull(userName)) {
+			Toast.fire({
+				icon: 'error',
+				title: '请填写用户名哦'
+			});
+			$('#userName').focus();
+			return false;
+		}
+		if (!/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(email)) {
+			Toast.fire({
+				icon: 'error',
+				title: '注意邮箱格式哦'
+			});
+			$('#Email').focus();
+			return false;
+		}
+		if (isNull(password)) {
+			Toast.fire({
+				icon: 'error',
+				title: '请填写密码哦'
+			});
+			$('#password').focus();
+			return false;
+		}
+		if (isNull(VerifyPassword) || VerifyPassword!==password) {
+			Toast.fire({
+				icon: 'error',
+				title: '密码貌似不一致哦'
+			});
+			$('#VerifyPassword').focus();
+			return false;
+		}
+		return true;
+	}
+
+	function subForm() {
+		if (validateBlogForm()) {
+			//暂不提供注册
+			// Toast.fire({
+			// 	icon: 'error',
+			// 	title: '暂时关闭注册功能！'
+			// });
+
+			//请求注册接口
+			$.ajax({
+				type: 'post',
+				url: '/userRegister',
+				data: {'name': $('#userName').val(),'mail': $('#Email').val(), 'password': $('#password').val()},
+				success: function (res) {
+					if (res.data == "success") {
+						Toast.fire({
+							icon: 'success',
+							title: '注册成功，跳转中...'
+						});
+						setTimeout("location.href = '/login';",1000);
+					} else if (res.data == "error") {
+						Toast.fire({
+							icon: 'error',
+							title: '系统错误！'
+						});
+						$('#userName').val("");
+						$('#password').val("");
+						$('#userName').focus();
+					} else {
+						Toast.fire({
+							icon: 'error',
+							title: '未知错误！'
+						});
+					}
+				}
+			});
+		}
+	}
+</script>
+
+</body>
+</html>

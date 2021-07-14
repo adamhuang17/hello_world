@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle} + '&nbsp;|&nbsp;Tag'"></title>
+	<link rel="shortcut icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+	<link rel="apple-touch-icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Theme style -->
+	<link rel="stylesheet" th:href="@{/css/adminlte.min.css}">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/plugins/cd-top/css/cd-top.css}">
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
+	<link rel="stylesheet" th:href="@{/plugins/font-awesome-4.7.0/css/font-awesome.min.css}">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+	<!-- Navbar -->
+	<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+		<!-- Left navbar links -->
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fa fa-bars"></i></a>
+			</li>
+		</ul>
+	</nav>
+	<!-- /.navbar -->
+
+	<!-- Main Sidebar Container -->
+	<aside class="main-sidebar sidebar-dark-primary elevation-4">
+		<!-- Brand Logo -->
+		<h1>
+			<a href="/index" class="brand-link">
+				<img th:src="${#servletContext.getAttribute('applicationOptionsMap').avatar}" class="brand-image img-circle elevation-3">
+				<span class="brand-text font-weight-light" th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle}">websiteTitle</span>
+			</a>
+		</h1>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+			<!-- Sidebar Menu -->
+			<nav class="mt-2">
+				<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+					<!-- Add icons to the links using the .nav-icon class
+						 with font-awesome or any other icon font library -->
+					<li class="nav-header">读万卷书</li>
+					<li class="nav-item">
+						<a href="/index" class="nav-link">
+							<i class="fa fa-home nav-icon"></i>
+							<p>首页</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a href="/category/1" class="nav-link">
+							<i class="fa fa-bookmark nav-icon"></i>
+							<p>分类</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active">
+							<i class="fa fa-tags nav-icon"></i>
+							<p>标签</p>
+						</a>
+					</li>
+
+					<li class="nav-header">行万里路</li>
+					<li class="nav-item">
+						<a href="/archive" class="nav-link">
+							<i class="fa fa-archive nav-icon"></i>
+							<p>归档</p>
+						</a>
+					</li>
+					<li class="nav-header">点滴记录</li>
+					<li class="nav-item">
+						<a href="/guestbook" class="nav-link">
+							<i class="fa fa-comments nav-icon"></i>
+							<p>留言</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a href="/file" class="nav-link">
+							<i class="fas fa-file-code nav-icon"></i>
+							<p>文件</p>
+						</a>
+					</li>
+				</ul>
+			</nav>
+			<!-- /.sidebar-menu -->
+		</div>
+		<!-- /.sidebar -->
+	</aside>
+
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper mt-3">
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-9">
+						<div class="card card-blue card-outline">
+							<div class="card-body">
+<!--								<button class="btn btn-primary btn-sm mt-2">-->
+<!--									<span>SpringBoot</span>-->
+<!--									<span class="ml-2 badge badge-warning">5</span>-->
+<!--								</button>-->
+<!--								<button class="btn btn-outline-primary btn-sm mt-2">-->
+<!--									<span>Spring</span>-->
+<!--									<span class="ml-2 badge badge-warning">4</span>-->
+<!--								</button>-->
+<!--								<button class="btn btn-outline-primary btn-sm mt-2">-->
+<!--									<span>天上人间</span>-->
+<!--									<span class="ml-2 badge badge-warning">2</span>-->
+<!--								</button>-->
+<!--								<button class="btn btn-outline-primary btn-sm mt-2">-->
+<!--									<span>我是一只猫猫猫猫猫</span>-->
+<!--									<span class="ml-2 badge badge-warning">100</span>-->
+<!--								</button>-->
+<!--								<button class="btn btn-outline-primary btn-sm mt-2">-->
+<!--									<span>JavaScript</span>-->
+<!--									<span class="ml-2 badge badge-warning">1000</span>-->
+<!--								</button>-->
+								<span id="cidList" th:each="t,cStat:${tags}">
+									<a th:href="'/tag/'+${t.tid}" class="btn btn-outline-primary btn-sm mt-2">
+										<span th:text="${t.name}"></span>
+										<span class="ml-2 badge badge-warning" th:text="${t.count}"></span>
+									</a>
+								</span>
+							</div>
+						</div>
+
+						<div class="card card-blue card-outline mb-5">
+							<div class="card-header" th:if="${tagHot == 1}">
+								<h3 class="card-title float-right">
+									热门博客 <span class="text-teal text-xl" th:text="${#servletContext.getAttribute('applicationOptionsMap').postsListSize}"></span> 篇
+								</h3>
+							</div>
+							<div class="block-thumb" th:each="content,arrayS:${contents}">
+								<div class="card-body bg-hover-gray">
+									<p>
+										<a th:href="'/articles/'+${content.slug}">
+											<div class="block-thumb2" th:style="'background-image:url('+${content.thumb}+')'">
+												<div class="overlaya">
+													<div class="post-header-text-container">
+														<span class="post-title" th:text="${content.title}"></span>
+														<span class="badge badge-info" th:text="${content.contentType}"></span>
+														<div class="post-meta">
+															<div class="post-meta-detail post-meta-detail-time">
+																<i class="fa fa-clock-o" aria-hidden="true"></i>
+																<time>[[${#dates.format(content.createdTime, 'yyyy-MM-dd')}]]
+																</time>
+																<div class="post-meta-devide">|</div>
+																<div class="post-meta-detail post-meta-detail-views">
+																	<i class="fa fa-eye" aria-hidden="true"></i> [[${content.views}]]
+																</div>
+																<div class="post-meta-devide">|</div>
+																<div class="post-meta-detail post-meta-detail-views">
+																	<i class="fa fa-comments-o" aria-hidden="true"></i> [[${content.commentCount}]]
+																</div>
+															</div>
+														</div>
+														<p class="mb-0">
+															<object><a class="btn btn-success btn-xs category-a" th:href="'/category/'+${content.cgid}"><i class="fa fa-bookmark-o nav-item" aria-hidden="true" th:text="'&nbsp;'+${content.categoryName}"></i></a></object>
+															<span class="block-thumb" th:each="tags,arrayS:${content.tList}">
+																<object><a class="btn btn-outline-light btn-xs" th:href="'/tag/'+${tags.tid}" th:text="${tags.name}"></a></object>
+															</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</a>
+									</p>
+									<p th:text="${content.description}" class="description-content"></p>
+								</div>
+								<hr class="m-0" th:if="${arrayS.size!=arrayS.index+1}">
+							</div>
+<!--							<hr class="m-0">-->
+<!--							<div class="card-footer clearfix">-->
+<!--								<ul class="pagination m-0 float-right">-->
+<!--									<li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-left"></i></a></li>-->
+<!--									<li class="page-item active"><a class="page-link" href="#">1</a></li>-->
+<!--									<li class="page-item"><a class="page-link" href="#">2</a></li>-->
+<!--									<li class="page-item"><a class="page-link" href="#">3</a></li>-->
+<!--									<li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>-->
+<!--								</ul>-->
+<!--							</div>-->
+							<!-- /.card-footer -->
+						</div>
+						<!-- /.nav-tabs-custom -->
+					</div>
+					<!-- /.col -->
+
+					<div class="col-md-3">
+						<!-- Profile Image -->
+						<div class="card widget-user sticky-top">
+							<!-- Add the bg color to the header using any of the bg-* classes -->
+							<div class="widget-user-header bg-info">
+								<h3 class="widget-user-username" th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle}"></h3>
+							</div>
+							<div class="widget-user-image">
+								<img class="img-circle elevation-2" src="${#servletContext.getAttribute('applicationOptionsMap').avatar}" alt="Avatar">
+							</div>
+							<div class="card-body pt-5">
+								<p class="text-muted" style="text-align: center" th:text="${#servletContext.getAttribute('applicationOptionsMap').description}">
+								</p>
+
+								<ul class="list-group list-group-unbordered">
+									<li class="list-group-item" th:if="${!recommendContents.isEmpty()}">
+										<strong><i class="far fa-bookmark mr-2"></i>推荐</strong>
+										<div th:each="content,arrayS:${recommendContents}">
+											<a th:href="'/articles/'+${content.slug}" class="d-block link-title text-truncate" th:text="${content.title}"></a>
+										</div>
+									</li>
+
+									<li class="list-group-item" th:if="!${#strings.isEmpty(#servletContext.getAttribute('applicationOptionsMap').location)}">
+										<strong><i class="fas fa-map-marker-alt mr-2"></i>位置</strong>
+										<div class="text-muted" th:text="${#servletContext.getAttribute('applicationOptionsMap').location}"></div>
+									</li>
+
+									<li class="list-group-item" th:if="!${#strings.isEmpty(#servletContext.getAttribute('applicationOptionsMap').hobbyList)}">
+										<strong><i class="fas fa-code-branch mr-2"></i>爱好</strong>
+										<div class="text-muted" >
+											<span class="badge badge-success mr-1" th:each="hobby,arrayS:${#servletContext.getAttribute('applicationOptionsMap').hobbyList}" th:text="${hobby}"> </span>
+										</div>
+									</li>
+
+									<li class="list-group-item">
+										<strong><i class="fas fa-link mr-2"></i>链接</strong>
+										<div class="text-muted">
+											<a href="https://github.com/hjj/blog-ssm" target="_blank" class="badge badge-warning">GitHub</a>
+										</div>
+									</li>
+
+									<li class="list-group-item text-center">
+										<a th:href="${#servletContext.getAttribute('applicationOptionsMap').qqLink}" target="_blank" class="btn btn-success btn-sm rounded-circle" data-toggle="tooltip" data-placement="top" title="QQ">
+											<i class="fa fa-qq"></i>
+										</a>
+										<a th:href="${#servletContext.getAttribute('applicationOptionsMap').emailLink}" target="_blank" class="btn btn-success btn-sm rounded-circle" data-toggle="tooltip" data-placement="top" title="Email">
+											<i class="fa fa-envelope"></i>
+										</a>
+										<a th:href="${#servletContext.getAttribute('applicationOptionsMap').githubLink}" target="_blank" class="btn btn-success btn-sm rounded-circle" data-toggle="tooltip" data-placement="top" title="GitHub">
+											<i class="fa fa-github text-white"></i>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.col -->
+			</div>
+			<!-- /.row -->
+		</section>
+		<!-- /.content -->
+	</div>
+	<!-- /.content-wrapper -->
+	<footer class="main-footer">
+		<a href="#0" class="cd-top">Top</a>
+		<p class="text-center mb-1">
+			Copyright © 2020-2021 | THE HARDER, THE MORE FORTUNATE.
+		</p>
+		<p class="text-center mb-1" th:if="!${#strings.isEmpty(#servletContext.getAttribute('applicationOptionsMap').icp)}">
+			<a href="https://beian.miit.gov.cn/" th:text="${#servletContext.getAttribute('applicationOptionsMap').icp}"></a>
+		</p>
+	</footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/js/adminlte.min.js}"></script>
+<!-- tooltip -->
+<script th:src="@{/js/tooltip.init.js}"></script>
+<script th:src="@{/plugins/cd-top/js/cd-top.js}"></script>
+
+<script>
+	var a = '[[${optionsMap.tagId}]]';
+	$('#cidList a').each(function(){
+		var b = this.href;
+		if (b.substring(b.lastIndexOf('\/')+1,b.length)==a){
+			this.className = 'btn btn-primary btn-sm mt-2'
+		}
+	})
+</script>
+
+</body>
+</html>

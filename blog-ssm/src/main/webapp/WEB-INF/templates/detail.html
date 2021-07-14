@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle} + '&nbsp;|&nbsp;'+${content.title}"></title>
+	<link rel="shortcut icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+	<link rel="apple-touch-icon" th:href="${#servletContext.getAttribute('applicationOptionsMap').websiteIco}">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Theme style -->
+	<link rel="stylesheet" th:href="@{/css/adminlte.min.css}">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/plugins/cd-top/css/cd-top.css}">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
+
+	<link rel="stylesheet" th:href="@{/plugins/tocbot/css/tocbot.css}">
+	<link rel="stylesheet" th:href="@{/plugins/prism/css/prism.css}">
+	<link rel="stylesheet" th:href="@{/plugins/lightbox/css/zoomify.min.css}">
+	<style type="text/css">
+		#comment-form {
+			position: relative;
+			margin: 0 0 16px;
+			padding: 10px 20px;
+			border-radius: 3px;
+			background: #fff;
+			-webkit-box-shadow: 0 1px 4px rgba(0,0,0,.04);
+			box-shadow: 0 1px 4px rgba(0,0,0,.04);
+		}
+        .card-footer {
+            background-color: unset;
+        }
+		.comment-form .input-control {
+			border: 0;
+			float: left;
+			max-width: 294.8px;
+			border-bottom: 1px dashed #ddd;
+			border-radius: 0;
+		}
+		.comment-form .input-control:hover {
+			border-bottom: 2px dashed #ff7e7e;
+		}
+		.comment-form .form-control {
+			margin-bottom: 10px;
+			font-size: 13px;
+			display: block;
+			width: 33.33%;
+			height: 34px;
+			color: #313131;
+			outline: 0;
+		}
+		textarea#textarea {
+			font-size: 16px;
+			height: 150px;
+			padding: 10px 11px;
+			resize: none;
+			width: 100%;
+		}
+		.comment-form .submit {
+			font-size: 13px;
+			position: absolute;
+			right: 31px;
+			bottom: 32px;
+			display: block;
+			line-height: 24px;
+			height: 28px;
+			margin: 0 auto;
+			padding: 0 20px;
+			-webkit-transition-duration: .4s;
+			transition-duration: .4s;
+			text-align: center;
+			color: #313131;
+			border: 1px solid #dedede;
+			border-radius: 30px;
+			background-color: #f7f7f7;
+		}
+		.comment-form .submit2 {
+			font-size: 13px;
+			position: absolute;
+			right: 31px;
+			bottom: 70px;
+			display: block;
+			line-height: 24px;
+			height: 28px;
+			margin: 0 auto;
+			padding: 0 20px;
+			-webkit-transition-duration: .4s;
+			transition-duration: .4s;
+			text-align: center;
+			color: #aeaeae;
+			border: 1px solid #dedede;
+			border-radius: 30px;
+			background-color: #f7f7f7;
+		}
+		span#smiliesbutton {
+			position: absolute;
+			left: 31px;
+			bottom: 31px;
+			display: block;
+		}
+		#smiliesbox {
+			display:none;
+			position:absolute;
+			z-index:9999;
+			width:355px;
+			margin-top:-114px;
+			margin-left:-26px;
+			padding:5px;
+			background-color:#fff;
+			border:1px solid #bbb;
+			-moz-border-radius:11px;
+			-webkit-border-radius:11px;
+			-khtml-border-radius:11px;
+			border-radius:11px;
+			-moz-box-shadow:1px 3px 15px #bbb;
+			-webkit-box-shadow:1px 3px 15px #bbb;
+			-khtml-box-shadow:1px 3px 15px #bbb;
+			box-shadow:1px 3px 15px #bbb;
+		}
+		.comment-form .submit:hover, .submit:active, .submit:active:focus, .submit:focus {
+			color: #eb5055;
+			border: 1px solid #eb5055;
+			outline-style: none;
+			background-color: #fafafa;
+		}
+		.comment-form .submit2:hover, .submit:active, .submit:active:focus, .submit:focus {
+			color: #eb5055;
+			border: 1px solid #eb5055;
+			outline-style: none;
+			background-color: #fafafa;
+		}
+		img.smile-img {
+			width: 40px;
+		}
+        span.comm-text {
+            word-break: break-all;
+            white-space: pre-line;
+        }
+		@media (max-width: 700px) {
+			.comment-form .form-control {
+				width: 100%;
+				max-width: 100%;
+			}
+            .card-footer {
+                padding: 0;
+            }
+            #comment-form {
+                margin: 0;
+                border-radius: .25rem;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+            }
+		}
+	</style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+	<!-- Navbar -->
+	<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+		<!-- Left navbar links -->
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fa fa-bars"></i></a>
+			</li>
+		</ul>
+
+		<!-- SEARCH FORM -->
+		<form class="form-inline ml-3">
+			<div class="input-group input-group-sm">
+				<input class="form-control form-control-navbar" type="search" placeholder="博客搜索..." aria-label="Search">
+				<div class="input-group-append">
+					<button class="btn btn-navbar" type="submit">
+						<i class="fa fa-search"></i>
+					</button>
+				</div>
+			</div>
+		</form>
+	</nav>
+	<!-- /.navbar -->
+
+	<!-- Main Sidebar Container -->
+	<aside class="main-sidebar sidebar-dark-primary elevation-4">
+		<!-- Brand Logo -->
+		<h1>
+			<a href="/index" class="brand-link">
+				<img th:src="${#servletContext.getAttribute('applicationOptionsMap').avatar}" class="brand-image img-circle elevation-3">
+				<span class="brand-text font-weight-light" th:text="${#servletContext.getAttribute('applicationOptionsMap').websiteTitle}">websiteTitle</span>
+			</a>
+		</h1>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+			<!-- Sidebar Menu -->
+			<nav class="mt-2">
+				<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+					<!-- Add icons to the links using the .nav-icon class
+						 with font-awesome or any other icon font library -->
+					<li class="nav-header">读万卷书</li>
+					<li class="nav-item">
+						<a href="/index" class="nav-link">
+							<i class="fa fa-home nav-icon"></i>
+							<p>首页</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a href="/category/1" class="nav-link">
+							<i class="fa fa-bookmark nav-icon"></i>
+							<p>分类</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a href="/tag" class="nav-link">
+							<i class="fa fa-tags nav-icon"></i>
+							<p>标签</p>
+						</a>
+					</li>
+
+					<li class="nav-header">行万里路</li>
+					<li class="nav-item">
+						<a href="/archive" class="nav-link">
+							<i class="fa fa-archive nav-icon"></i>
+							<p>归档</p>
+						</a>
+					</li>
+					<li class="nav-header">点滴记录</li>
+					<li class="nav-item">
+						<a href="/guestbook" class="nav-link">
+							<i class="fa fa-comments nav-icon"></i>
+							<p>留言</p>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a href="/file" class="nav-link">
+							<i class="fas fa-file-code nav-icon"></i>
+							<p>文件</p>
+						</a>
+					</li>
+				</ul>
+			</nav>
+			<!-- /.sidebar-menu -->
+		</div>
+		<!-- /.sidebar -->
+	</aside>
+
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper mt-3">
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-9">
+						<div class="card card-teal card-outline mb-5 bg-color-ea">
+							<div class="card-header">
+								<div>
+									<span class="text-xl" th:text="${content.title}"></span>
+									<span class="badge badge-info" th:text="${content.contentType}"></span>
+								</div>
+								<div>
+									<span class="text-sm mr-1"><i class="far fa-calendar-alt mr-1"></i>[[${#dates.format(content.createdTime, 'yyyy-MM-dd HH:mm')}]]</span>
+									<span class="text-sm"><i class="far fa-eye mr-1"></i>[[${content.views}]]</span>
+								</div>
+
+							</div><!-- /.card-header -->
+							<textarea id="mdtext" th:text="${content.contentText}" style="display: none;"></textarea>
+							<div class="card-body" id="blog-content">
+							</div>
+							<hr class="m-0">
+							<div class="card-body position-relative p-3">
+							<div class="text-lg text-bold mb-3">
+								<i class="far fa-comments mr-2"></i>
+								评&nbsp;&nbsp;论
+							</div>
+							<!-- Conversations are loaded here -->
+							<!-- Message to the right -->
+							<div th:each="comment,arrayS:${comments}">
+								<div class="direct-chat-msg" th:if="${comment.authorid == content.authorId}">
+									<div class="direct-chat-infos clearfix">
+										<a th:href="${comment.url}" target="_blank" class="direct-chat-name float-left" th:text="${comment.author}"></a>
+										<span class="badge badge-warning float-left ml-1">博主</span>
+										<span class="direct-chat-name float-left text-green ml-2" th:if="${comment.parent != 0}">回复
+												<span th:text="'@'+${comment.parentNickName}"></span>
+											</span>
+										<span class="direct-chat-timestamp float-left ml-2" th:text="${comment.createdDisplay}"></span>
+									</div>
+									<!-- /.direct-chat-infos -->
+									<img class="direct-chat-img position-absolute border" th:src="${comment.mail}" alt="message user image">
+									<!-- /.direct-chat-img -->
+									<div class="direct-chat-text float-left"><span class="comm-text" th:utext="${comment.text}"/><a class="badge" th:href="'javascript:reply(\''+'/comment/'+${content.cid}+'/'+${comment.coid}+'\''+',\''+${comment.author}+'\')'">回复</a>
+									</div>
+									<!-- /.direct-chat-text -->
+								</div>
+								<div class="direct-chat-msg right" th:if="${comment.authorid != content.authorId}">
+									<div class="direct-chat-infos clearfix">
+										<a th:href="${comment.url}" target="_blank" class="direct-chat-name float-right" th:text="${comment.author}"></a>
+										<span class="direct-chat-name float-right text-green mr-2" th:if="${comment.parent != 0}">回复
+											<span th:text="'@'+${comment.parentNickName}"></span>
+										</span>
+
+										<span class="direct-chat-timestamp float-right mr-2" th:text="${comment.createdDisplay}"></span>
+
+									</div>
+									<!-- /.direct-chat-infos -->
+									<img class="direct-chat-img border position-absolute r-2" th:src="${comment.mail}" alt="message user image">
+									<!-- /.direct-chat-img -->
+									<div class="direct-chat-text float-right"><span class="comm-text" th:utext="${comment.text}"/><a class="badge" th:href="'javascript:reply(\''+'/comment/'+${content.cid}+'/'+${comment.coid}+'\''+',\''+${comment.author}+'\')'">回复</a>
+									</div>
+									<!-- /.direct-chat-text -->
+								</div>
+							</div>
+							<!-- /.direct-chat-msg -->
+						</div>
+							<div class="card-footer">
+								<!--								<form action="#" method="post">-->
+								<!--									<div class="input-group">-->
+								<!--										<input type="text" name="message" placeholder="Type Message ..." class="form-control">-->
+								<!--										<span class="input-group-append">-->
+								<!--                      						<button type="button" class="btn btn-primary">Send</button>-->
+								<!--                    					</span>-->
+								<!--									</div>-->
+								<!--								</form>-->
+								<form method="post" action="/comment" id="comment-form" class="comment-form" role="form" onsubmit="getElementById('misubmit').disabled=true;return true;">
+									<div th:if="${#session.getAttribute('USER_SESSION')}==null">
+										<input type="text" name="author" maxlength="12" id="author" class="form-control input-control clearfix" placeholder="昵称 (必填哦)" value="" required="">
+										<input type="email" name="mail" id="mail" class="form-control input-control clearfix" placeholder="邮箱 (必填哦)" value="" required="">
+										<input type="url" name="url" id="url" class="form-control input-control clearfix" placeholder="博客地址 (https://)" value="">
+									</div>
+									<input type="hidden" name="contentId" th:value="${content.cid}">
+
+									<textarea name="commentText" id="textarea" class="form-control" placeholder="来都来了，看都看了，想说点什么吗 0_o" required="required"></textarea>
+
+									<button type="submit" class="submit" id="misubmit">提交</button>
+									<button type="button" class="submit2" id="cancelReply" style="display: none" onclick="javascript:cancelR()">取消</button>
+									<div id="smiliesbox">
+										<span style="cursor:pointer;" data-tag=" :mrgreen: " title=":mrgreen:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_mrgreen.png" alt="icon_mrgreen.png"></span>
+										<span style="cursor:pointer;" data-tag=" :neutral: " title=":neutral:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_neutral.png" alt="icon_neutral.png"></span>
+										<span style="cursor:pointer;" data-tag=" :twisted: " title=":twisted:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_twisted.png" alt="icon_twisted.png"></span>
+										<span style="cursor:pointer;" data-tag=" :arrow: " title=":arrow:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_arrow.png" alt="icon_arrow.png"></span>
+										<span style="cursor:pointer;" data-tag=" :shock: " title=":shock:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_eek.png" alt="icon_eek.png"></span>
+										<span style="cursor:pointer;" data-tag=" :smile: " title=":smile:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_smile.png" alt="icon_smile.png"></span>
+										<span style="cursor:pointer;" data-tag=" :???: " title=":???:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_confused.png" alt="icon_confused.png"></span>
+										<span style="cursor:pointer;" data-tag=" :cool: " title=":cool:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_cool.png" alt="icon_cool.png"></span>
+										<span style="cursor:pointer;" data-tag=" :evil: " title=":evil:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_evil.png" alt="icon_evil.png"></span>
+										<span style="cursor:pointer;" data-tag=" :grin: " title=":grin:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_biggrin.png" alt="icon_biggrin.png"></span>
+										<span style="cursor:pointer;" data-tag=" :idea: " title=":idea:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_idea.png" alt="icon_idea.png"></span>
+										<span style="cursor:pointer;" data-tag=" :oops: " title=":oops:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_redface.png" alt="icon_redface.png"></span>
+										<span style="cursor:pointer;" data-tag=" :razz: " title=":razz:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_razz.png" alt="icon_razz.png"></span>
+										<span style="cursor:pointer;" data-tag=" :roll: " title=":roll:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_rolleyes.png" alt="icon_rolleyes.png"></span>
+										<span style="cursor:pointer;" data-tag=" :wink: " title=":wink:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_wink.png" alt="icon_wink.png"></span>
+										<span style="cursor:pointer;" data-tag=" :cry: " title=":cry:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_cry.png" alt="icon_cry.png"></span>
+										<span style="cursor:pointer;" data-tag=" :eek: " title=":eek:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_surprised.png" alt="icon_surprised.png"></span>
+										<span style="cursor:pointer;" data-tag=" :lol: " title=":lol:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_lol.png" alt="icon_lol.png"></span>
+										<span style="cursor:pointer;" data-tag=" :mad: " title=":mad:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_mad.png" alt="icon_mad.png"></span>
+										<span style="cursor:pointer;" data-tag=" :sad: " title=":sad:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_sad.png" alt="icon_sad.png"></span>
+										<span style="cursor:pointer;" data-tag=" :!: " title=":!:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_exclaim.png" alt="icon_exclaim.png"></span>
+										<span style="cursor:pointer;" data-tag=" :?: " title=":?:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/icon_question.png" alt="icon_question.png"></span>
+										<span style="cursor:pointer;" data-tag=" :nidongde: " title=":nidongde:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/nidongde.png" alt="nidongde.png"></span>
+										<span style="cursor:pointer;" data-tag=" :xiaoniao: " title=":xiaoniao:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/xiaoniao.png" alt="xiaoniao.png"></span>
+										<span style="cursor:pointer;" data-tag=" :wuzuixiao: " title=":wuzuixiao:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/wuzuixiao.png" alt="wuzuixiao.png"></span>
+										<span style="cursor:pointer;" data-tag=" :weiqu: " title=":weiqu:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/weiqu.png" alt="weiqu.png"></span>
+										<span style="cursor:pointer;" data-tag=" :yamiedie: " title=":yamiedie:"><img style="margin:2px;max-width:30px;display:inline-block;" src="https://hjjcom/usr/plugins/Smilies/tieba/yamiedie.png" alt="yamiedie.png"></span>
+									</div>
+									<span style="cursor:pointer;" id="smiliesbutton" title="选择表情">
+        								<img src="https://hjjcom/usr/plugins/Smilies/tieba/icon_smile.png" alt="选择表情" style="max-width:30px;">
+									</span>
+								</form>
+							</div>
+							<!-- /.card-body -->
+						</div>
+						<!-- /.nav-tabs-custom -->
+					</div>
+					<!-- /.col -->
+
+					<div class="col-md-3 d-none d-md-block">
+						<!-- Profile Image -->
+						<div class="card card-primary card-outline bg-color-ea sticky-top">
+							<div class="card-header text-center text-lg">
+								目录
+							</div><!-- /.card-header -->
+							<div class="card-body toc p-2" id="toc">
+							</div>
+							<!-- /.card-body -->
+						</div>
+						<!-- /.card -->
+					</div>
+					<!-- /.col -->
+				</div>
+				<!-- /.row -->
+			</div><!-- /.container-fluid -->
+		</section>
+		<!-- /.content -->
+	</div>
+	<!-- /.content-wrapper -->
+	<footer class="main-footer">
+		<a href="#0" class="cd-top">Top</a>
+		<p class="text-center mb-1">
+			Copyright © 2020-2021 | THE HARDER, THE MORE FORTUNATE.
+		</p>
+		<p class="text-center mb-1" th:if="!${#strings.isEmpty(#servletContext.getAttribute('applicationOptionsMap').icp)}">
+			<a href="https://beian.miit.gov.cn/" th:text="${#servletContext.getAttribute('applicationOptionsMap').icp}"></a>
+		</p>
+	</footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/js/adminlte.min.js}"></script>
+<script th:src="@{/plugins/lightbox/js/zoomify.min.js}"></script>
+
+<script th:src="@{/plugins/tocbot/js/tocbot.min.js}"></script>
+<script th:src="@{/plugins/prism/js/prism.js}"></script>
+
+<script th:src="@{/plugins/cd-top/js/cd-top.js}"></script>
+<script th:src="@{/js/detail.js}"></script>
+<script th:src="@{/js/getCookie.js}"></script>
+
+<script th:src="@{/plugins/editor.md/lib/marked.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/prettify.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/raphael.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/underscore.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/flowchart.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/jquery.flowchart.min.js}"></script>
+<script th:src="@{/plugins/editor.md/lib/sequence-diagram.min.js}"></script>
+
+<script th:src="@{/plugins/editor.md/js/editormd.js}"></script>
+
+<script type="text/javascript">
+	$("#author").val(getCookie('authorCookie'));
+	$("#mail").val(getCookie('mailCookie'));
+	$("#url").val(getCookie('urlCookie'));
+</script>
+<script type="text/javascript">
+	//markDown转HTMl的方法
+	//先对容器初始化，在需要展示的容器中创建textarea隐藏标签，
+	$("#blog-content").html('<textarea id="appendTest"></textarea>');
+	var content=$("#mdtext").val();//获取需要转换的内容;//获取需要转换的内容
+
+	$("#appendTest").val(content);//将需要转换的内容加到转换后展示容器的textarea隐藏标签中
+
+	//转换开始,第一个参数是上面的div的id
+	editormd.markdownToHTML("blog-content", {
+		htmlDecode: "style,script,iframe", //可以过滤标签解码
+		emoji: true,
+		taskList:true,
+		tex: false,
+		flowChart:true,
+		sequenceDiagram:true
+	});
+</script>
+
+<script>
+	$(function(){
+		var box = $("#smiliesbox");
+		$("#smiliesbutton").click(function(){
+			box.show();
+			$(document).mouseup(function(e){
+				if (!box.is(e.target) && box.has(e.target).length === 0) {
+					box.hide();
+				}
+			});
+		});
+		$("span",box).click(function(){
+			$("#textarea").insert($(this).attr("data-tag"));
+
+			box.hide();
+			$(document).mouseup(function(e){
+				if (!box.is(e.target) && box.has(e.target).length === 0) {
+					box.hide();
+				}
+			});
+		});
+		$.fn.extend({
+			"insert": function(myValue){
+				var $t = $(this)[0];
+				if (document.selection) {
+					this.focus();
+					sel = document.selection.createRange();
+					sel.text = myValue;
+					this.focus()
+				} else if ($t.selectionStart || $t.selectionStart=="0") {
+					var startPos = $t.selectionStart;
+					var endPos = $t.selectionEnd;
+					var scrollTop = $t.scrollTop;
+					$t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+					this.focus();
+					$t.selectionStart = startPos + myValue.length;
+					$t.selectionEnd = startPos + myValue.length;
+					$t.scrollTop = scrollTop
+				} else {
+					this.value += myValue;
+					this.focus()
+				}
+			}
+		})
+	});
+</script>
+<script>
+	function reply(date,author) {
+		$('#textarea').attr('placeholder','@'+author);
+
+		$('#textarea').focus();
+		$('#cancelReply').css('display','');
+		$('#comment-form').attr('action',date);
+
+	}
+	function cancelR() {
+		$('#comment-form').attr('action','/comment');
+		$('#cancelReply').css('display','none');
+		$('#textarea').attr('placeholder','来都来了，看都看了，想说点什么吗 0_o');
+		$('#textarea').val('');
+	}
+</script>
+<script>
+	$('#blog-content img').zoomify();
+</script>
+</body>
+</html>
